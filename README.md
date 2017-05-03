@@ -2,8 +2,10 @@
 Compile and run `src/cudnn_conv_float32.cc` or `src/cudnn_conv_int8.cc` with CUDA 8.0 and cuDNN 6.0.
 The code is self contained and all the parameters are hardcoded into the code to help debugging the propblem.
 
+## Working version (32 bit float)
 `src/cudnn_conv_float32.cc` is a simple implementation of FLOAT32 convolution using cuDNN 6. This code seems to work.
 
+## Broken version (8 bit int)
 `src/cudnn_conv_int8.cc` is a variant of the above FLOAT32 version for INT8-based convolution. As explained in the user manual, you must have compute capability of 6.1 or higher. A number of parameters are changed from the FLOAT32 version following the [user manual](http://developer2.download.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/Doc/CUDNN_Library.pdf?afFAtswqyLpPoty-E55PJd8z1XC5RyERCZXGEJ5jvCTE7vMVYuLFkakbXKfWx-NdE27mCVVQ2i6MGpgT5wc5u3XW1AVg00dHW8z7ZUmoG1-7eY4TilRkaFceS00cunWAPShEEa1SxeSRHIdImuUF8d232eOPsDqVtPLbftEYFF6Nag). **This code fails with `CUDNN_STATUS_NOT_SUPPORTED` error**.
 * Descriptor data types are set to `CUDNN_DATA_INT8` for the input/output tensors and filter (See page 59)
 * Convolution descriptor has data type `CUDNN_DATA_INT32`, as instructed in the manual (See page 59)
