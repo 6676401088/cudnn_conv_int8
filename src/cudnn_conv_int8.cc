@@ -131,20 +131,25 @@ struct TrainingContext {
     int h = conv.in_height;
     int w = conv.in_width;
 
-    // Set input tensor (Changed CUDNN_DATA_FLOAT to CUDNN_DATA_INT8, following the manual)
+    // Set input tensor. Folowing the manual, chagnged
+    // * CUDNN_DATA_FLOAT -> CUDNN_DATA_INT8, and 
+    // * CUDNN_TENSOR_NCHW -> CUDNN_TENSOR_NHWC
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        srcTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
+        srcTensorDesc, CUDNN_TENSOR_NHWC, CUDNN_DATA_INT8, n, c, h, w));
 
-    // Set convolution filter (Changed CUDNN_DATA_FLOAT to CUDNN_DATA_INT8, following the manual)
+    // Set convolution filter. Folowing the manual, chagnged
+    // * CUDNN_DATA_FLOAT -> CUDNN_DATA_INT8, and 
+    // * CUDNN_TENSOR_NCHW -> CUDNN_TENSOR_NHWC
     checkCUDNN(cudnnSetFilter4dDescriptor(filterDesc,
                                           CUDNN_DATA_INT8,
-                                          CUDNN_TENSOR_NCHW,
+                                          CUDNN_TENSOR_NHWC,
                                           conv.out_channels,
                                           conv.in_channels,
                                           conv.kernel_size,
                                           conv.kernel_size));
 
-    // Set convolution operator (Changed CUDNN_DATA_FLOAT to CUDNN_DATA_INT32, following the manual)
+    // Set convolution operator. Folowing the manual, chagnged
+    // * CUDNN_DATA_FLOAT -> CUDNN_DATA_INT32
     int pad_height = 0;
     int pad_width = 0;
     int stride_h = 1;
@@ -160,13 +165,16 @@ struct TrainingContext {
                                                dilation_w,
                                                CUDNN_CONVOLUTION,
                                                CUDNN_DATA_INT32));
-    // Compute output dimension
+
+    // Compute output dimension. Folowing the manual, chagnged
+    // * CUDNN_DATA_FLOAT -> CUDNN_DATA_INT8, and 
+    // * CUDNN_TENSOR_NCHW -> CUDNN_TENSOR_NHWC
     checkCUDNN(cudnnGetConvolution2dForwardOutputDim(
         convDesc, srcTensorDesc, filterDesc, &n, &c, &h, &w));
 
     // Set output tensor (Changed CUDNN_DATA_FLOAT to CUDNN_DATA_INT8, following the manual)
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        dstTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
+        dstTensorDesc, CUDNN_TENSOR_NHWC, CUDNN_DATA_INT8, n, c, h, w));
 
     // Retrieve orward pass algorithm. We can either hardcode it to a specific
     // algorithm or use cudnnGetConvolutionForwardAlgorithm. For the purpose
